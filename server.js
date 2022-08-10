@@ -6,17 +6,19 @@ import { fileURLToPath } from "url";
 
 import userRoute from "./routes/user.js";
 import productRoute from "./routes/product.js";
+import orderRoute from "./routes/order.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
-const port = process.env.PORT || 8001;
+const port = process.env.PORT || 8000;
 
 dotenv.config();
 app.use(express.json());
 app.use(express.static(__dirname + "/public/images"));
 app.use("/user", userRoute);
 app.use("/product", productRoute);
+app.use("/order", orderRoute);
 
 mongoose.connect(process.env.URI, { useNewUrlParser: true });
 const db = mongoose.connection;
