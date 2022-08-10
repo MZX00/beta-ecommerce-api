@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const products = new Schema({
-  id: { type: ObjectID, requried: true },
+  id: { type: Schema.ObjectId, requried: true },
   quantity: { type: Number, requried: true },
   size: { type: String },
   color: { type: String },
