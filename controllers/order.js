@@ -53,7 +53,7 @@ export const viewAllOrders = async (req, res) => {
                 n._doc.products.map(async (p) => {
                   const productData = await product
                     .findById(p._id)
-                    .select({ name: 1 });
+                    .select({ name: 1, image: 1 });
                   return { ...p._doc, name: productData.name };
                 })
               );
@@ -81,4 +81,57 @@ export const viewAllOrders = async (req, res) => {
   }
 };
 
-export const viewUserOrder = (req, res) => {};
+export const viewUserOrder = async (req, res) => {
+  try {
+    const pagelimit = 20;
+    //initial page loading
+    if (
+      !req.body.progressPrevID &&
+      !req.body.deliveredPrevID &&
+      !req.body.cancelledPrevID
+    ) {
+      let data = [];
+      const userData = await user.findById(req.body.userid).select({ name: 1 });
+      for (let i = 0; i < 3; i++) {
+        const status =
+          i === 0 ? "inprogress" : i === 1 ? "cancelled" : "completed";
+        const result = await order
+          .find({ status: status, userid: req.body.userid })
+          .limit(pagelimit);
+        data.push(
+          //adding username
+
+          await Promise.all(
+            result.map(async (n) => {
+              //adding product name
+              const products = await Promise.all(
+                n._doc.products.map(async (p) => {
+                  const productData = await product
+                    .findById(p._id)
+                    .select({ name: 1, image: 1 });
+                  return { ...p._doc, name: productData.name };
+                })
+              );
+
+              return {
+                ...n._doc,
+                products: products,
+              };
+            })
+          )
+        );
+      }
+      res.status(200).json({
+        inprogress: data[0],
+        cancelled: data[1],
+        completed: data[2],
+        name: userData.name,
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      header: { title: "Failed to fetch orders", message: err.message },
+      body: {},
+    });
+  }
+};
