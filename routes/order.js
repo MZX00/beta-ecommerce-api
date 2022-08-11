@@ -1,9 +1,15 @@
 import express from "express";
-import { createOrder, viewAllOrders } from "../controllers/order.js";
+import {
+  createOrder,
+  viewAllOrders,
+  viewUserOrder,
+} from "../controllers/order.js";
 
 const router = express.Router();
 
 router.post("/admin/view", viewAllOrders);
+
+router.post("/view", viewUserOrder);
 
 router.post("/create", createOrder);
 

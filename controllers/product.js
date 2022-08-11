@@ -118,6 +118,11 @@ export const viewProductList = async (req, res) => {
         header: { message: "success" },
         body: { products: result },
       });
+    } else {
+      res.status(500).json({
+        header: { title: "No Products", message: "There are no products." },
+        body: {},
+      });
     }
   } catch (err) {
     res.status(500).json({

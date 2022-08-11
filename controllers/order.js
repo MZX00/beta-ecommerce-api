@@ -1,4 +1,6 @@
 import order from "../model/order.js";
+import user from "../model/user.js";
+import product from "../model/product.js";
 import moment from "moment";
 import jwt from "jsonwebtoken";
 
@@ -26,17 +28,49 @@ export const createOrder = async (req, res) => {
 
 export const viewAllOrders = async (req, res) => {
   try {
-    const query = req.body.prevID ? { _id: { $gt: req.body.prevID } } : {};
     const pagelimit = 20;
+    //initial page loading
+    if (
+      !req.body.progressPrevID &&
+      !req.body.deliveredPrevID &&
+      !req.body.cancelledPrevID
+    ) {
+      let data = [];
+      for (let i = 0; i < 3; i++) {
+        const status =
+          i === 0 ? "inprogress" : i === 1 ? "cancelled" : "completed";
+        const result = await order.find({ status: status }).limit(pagelimit);
+        data.push(
+          //adding username
+          await Promise.all(
+            result.map(async (n) => {
+              const userData = await user
+                .findById(n.userid)
+                .select({ name: 1 });
 
-    const result = await order
-      .find(query)
-      .limit(pagelimit)
-      .select({ _id: 1, name: 1, price: 1, image: 1 });
-    if (result) {
+              //adding product name
+              const products = await Promise.all(
+                n._doc.products.map(async (p) => {
+                  const productData = await product
+                    .findById(p._id)
+                    .select({ name: 1 });
+                  return { ...p._doc, name: productData.name };
+                })
+              );
+
+              return {
+                ...n._doc,
+                products: products,
+                userName: userData.name,
+              };
+            })
+          )
+        );
+      }
       res.status(200).json({
-        header: { message: "success" },
-        body: { orders: result },
+        inprogress: data[0],
+        cancelled: data[1],
+        completed: data[2],
       });
     }
   } catch (err) {
@@ -46,3 +80,5 @@ export const viewAllOrders = async (req, res) => {
     });
   }
 };
+
+export const viewUserOrder = (req, res) => {};
