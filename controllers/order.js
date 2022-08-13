@@ -54,7 +54,12 @@ export const viewAllOrders = async (req, res) => {
                   const productData = await product
                     .findById(p._id)
                     .select({ name: 1, image: 1, price: 1 });
-                  return { ...p._doc, name: productData.name };
+                  return {
+                    ...p._doc,
+                    name: productData.name,
+                    image: productData.image,
+                    price: productData.price,
+                  };
                 })
               );
 
