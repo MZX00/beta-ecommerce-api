@@ -53,7 +53,7 @@ export const viewAllOrders = async (req, res) => {
                 n._doc.products.map(async (p) => {
                   const productData = await product
                     .findById(p._id)
-                    .select({ name: 1 });
+                    .select({ name: 1, image: 1, price: 1 });
                   return { ...p._doc, name: productData.name };
                 })
               );
