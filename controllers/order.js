@@ -95,13 +95,13 @@ export const viewUserOrder = async (req, res) => {
       !req.body.deliveredPrevID &&
       !req.body.cancelledPrevID
     ) {
+      const userInfo = await jwt.decode(req.body.token, process.env.JWT_SECRET);
       let data = [];
-      const userData = await user.findById(req.body.userid).select({ name: 1 });
       for (let i = 0; i < 3; i++) {
         const status =
           i === 0 ? "inprogress" : i === 1 ? "cancelled" : "completed";
         const result = await order
-          .find({ status: status, userid: req.body.userid })
+          .find({ status: status, userid: userInfo.id })
           .limit(pagelimit);
         data.push(
           //adding username
@@ -130,7 +130,6 @@ export const viewUserOrder = async (req, res) => {
         inprogress: data[0],
         cancelled: data[1],
         completed: data[2],
-        name: userData.name,
       });
     }
   } catch (err) {

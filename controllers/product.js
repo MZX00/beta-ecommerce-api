@@ -112,7 +112,7 @@ export const viewProductList = async (req, res) => {
     const result = await product
       .find(query)
       .limit(pagelimit)
-      .select({ _id: 1, name: 1, price: 1, image: 1 });
+      .select({ _id: 1, name: 1, price: 1, stock: 1, discount: 1, image: 1 });
     if (result) {
       res.status(200).json({
         header: { message: "success" },
