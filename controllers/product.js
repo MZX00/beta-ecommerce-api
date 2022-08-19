@@ -1,4 +1,5 @@
 import product from "../model/product.js";
+import category from "../model/category.js";
 
 export const addProduct = async (req, res) => {
   try {
@@ -117,6 +118,35 @@ export const viewProductList = async (req, res) => {
       res.status(200).json({
         header: { message: "success" },
         body: { products: result },
+      });
+    } else {
+      res.status(500).json({
+        header: { title: "No Products", message: "There are no products." },
+        body: {},
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      header: { message: err.message },
+    });
+  }
+};
+
+export const viewProductListCategory = async (req, res) => {
+  try {
+    const query = req.body.prevProductID
+      ? { _id: req.body._id, products: { $gt: req.body.prevProductID } }
+      : { _id: req.body._id };
+    const pagelimit = 20;
+
+    const result = await category
+      .find(query, "products")
+      .populate("products")
+      .limit(pagelimit);
+    if (result) {
+      res.status(200).json({
+        header: { message: "success" },
+        body: { products: result[0].products },
       });
     } else {
       res.status(500).json({

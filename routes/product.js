@@ -4,6 +4,7 @@ import {
   deleteProduct,
   viewProductSingle,
   viewProductList,
+  viewProductListCategory,
   updateProduct,
 } from "../controllers/product.js";
 import multer from "multer";
@@ -24,6 +25,8 @@ const upload = multer({ storage: fileStorageEngine });
 router.post("/view", viewProductSingle);
 
 router.post("/view/list", viewProductList);
+
+router.post("/view/category", viewProductListCategory);
 
 router.post("/add", upload.single("image"), addProduct);
 

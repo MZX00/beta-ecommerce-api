@@ -21,11 +21,11 @@ const fileStorageEngine = multer.diskStorage({
 
 const upload = multer({ storage: fileStorageEngine });
 
-router.get("/", getMainCategories);
+router.get("/view", getMainCategories);
 
 router.post("/create", upload.single("image"), createMainCategory);
 
-router.post("/sub", getSubCategories);
+router.post("/sub/view", getSubCategories);
 
 router.post("/sub/create", upload.single("image"), createSubCategory);
 

@@ -33,6 +33,7 @@ export const createMainCategory = async (req, res) => {
       name: req.body.name,
       image,
       subCategories: JSON.parse(req.body.subCategories),
+      //Products need to be sorted before insert
       products: req.body.products ? JSON.parse(req.body.products) : [],
     });
     res.status(200).json({ header: { message: "success" }, body: {} });
@@ -55,10 +56,6 @@ export const getSubCategories = async (req, res) => {
     let categories = await category
       .findById(req.body._id, "subCategories")
       .populate("subCategories");
-    // categories = categories.map(async (n) => {
-    //   console.log(n);
-    //   //   const sub = categories.findById(n);
-    // });
     res.status(200).json({ header: { message: "success" }, body: categories });
   } catch (err) {
     res.status(500).json({
@@ -77,10 +74,11 @@ export const createSubCategory = async (req, res) => {
     const result = await category.create({
       name: req.body.name,
       image,
+      //Products need to be sorted before insert
       products: JSON.parse(req.body.products),
     });
     res.status(200).json({
-      header: { mesbsage: "success" },
+      header: { message: "success" },
       body: {
         _id: result._id,
       },
