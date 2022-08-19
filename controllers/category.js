@@ -12,7 +12,7 @@ export const getMainCategories = async (req, res) => {
   try {
     const categories = await category.find(
       { subCategories: { $ne: [] } },
-      "-subCategories"
+      "-subCategories -products"
     );
     res
       .status(200)
@@ -57,7 +57,7 @@ export const getSubCategories = async (req, res) => {
   try {
     let categories = await category
       .findById(req.body._id, "subCategories")
-      .populate("subCategories");
+      .populate("subCategories", "-products -subCategories");
     res.status(200).json({ header: { message: "success" }, body: categories });
   } catch (err) {
     res.status(500).json({
