@@ -10,11 +10,13 @@ import jwt from "jsonwebtoken";
 
 export const getMainCategories = async (req, res) => {
   try {
-    const result = await category.find(
+    const categories = await category.find(
       { subCategories: { $ne: [] } },
       "-subCategories"
     );
-    res.status(200).json({ header: { message: "success" }, body: { result } });
+    res
+      .status(200)
+      .json({ header: { message: "success" }, body: { categories } });
   } catch (err) {
     res.status(500).json({
       header: { title: "Failed to fetch categories", message: err.message },
