@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import userRoute from "./routes/user.js";
 import productRoute from "./routes/product.js";
 import orderRoute from "./routes/order.js";
+import categoryRoute from "./routes/category.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -19,6 +20,7 @@ app.use(express.static(__dirname + "/public/images"));
 app.use("/user", userRoute);
 app.use("/product", productRoute);
 app.use("/order", orderRoute);
+app.use("/category", categoryRoute);
 
 mongoose.connect(process.env.URI, { useNewUrlParser: true });
 const db = mongoose.connection;

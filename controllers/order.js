@@ -73,9 +73,12 @@ export const viewAllOrders = async (req, res) => {
         );
       }
       res.status(200).json({
-        inprogress: data[0],
-        cancelled: data[1],
-        completed: data[2],
+        header: { message: "success" },
+        body: {
+          inprogress: data[0],
+          cancelled: data[1],
+          completed: data[2],
+        },
       });
     }
   } catch (err) {
@@ -132,9 +135,12 @@ export const viewUserOrder = async (req, res) => {
         );
       }
       res.status(200).json({
-        inprogress: data[0],
-        cancelled: data[1],
-        completed: data[2],
+        header: { message: "success" },
+        body: {
+          inprogress: data[0],
+          cancelled: data[1],
+          completed: data[2],
+        },
       });
     }
   } catch (err) {
