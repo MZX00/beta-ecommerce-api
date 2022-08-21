@@ -7,9 +7,14 @@ const paymentCard = new Schema({
   cardName: { type: String, required: true },
 });
 
-const Address = new Schema({
-  address: { type: String, required: true },
-});
+// const address = new Schema({
+//   _id: { type: Schema.ObjectId, required: true },
+//   fullName: { type: String, required: true },
+//   address: { type: String, required: true },
+//   city: { type: String, required: true },
+//   state: { type: String, required: true },
+//   country: { type: String, required: true },
+// });
 
 const user = new Schema({
   email: { type: String, required: true },
@@ -17,7 +22,7 @@ const user = new Schema({
   password: { type: String, required: true },
   phone: { type: String, required: true },
   dob: { type: Date, required: true },
-  address: { type: String, required: false },
+  address: { type: [String], required: false },
   admin: { type: Boolean, required: true },
   paymentCard: { type: [paymentCard], required: true },
 });

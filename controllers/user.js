@@ -2,6 +2,7 @@ import user from "../model/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import moment from "moment";
+import address from "../model/address.js";
 
 export const signUp = async (req, res) => {
   try {
@@ -223,11 +224,11 @@ export const deleteAccount = async (req, res) => {
 
         let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
 
-        await user.deleteOne({ _id: data.id });
+        let result = await user.deleteOne({ _id: data.id });
 
         res.status(200).json({
           header: { message: "Account deleted successfully" },
-          body: {},
+          body: { result },
         });
       });
     }
@@ -278,11 +279,7 @@ export const setName = async (req, res) => {
   try {
     // if token does not exists
     if (!req.body.token) {
-      res.status(500).json({
-        header: { message: "Token not found" },
-        body: {},
-      });
-      return;
+      throw { message: "Not Authorized" };
     }
 
     // get data from token
@@ -295,11 +292,7 @@ export const setName = async (req, res) => {
     // check if name is provided
 
     if (!req.body.name) {
-      res.status(500).json({
-        header: { message: "Name field not provided" },
-        body: {},
-      });
-      return;
+      throw { message: "Name field not provided" };
     }
     // change name in database
 
@@ -317,6 +310,277 @@ export const setName = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       header: { title: "Failed to set the password", message: err.message },
+      body: {},
+    });
+  }
+};
+
+export const addAddress = async (req, res) => {
+  try {
+    // check if token exists
+    if (!req.body.token) {
+      throw { message: "Not Authorized" };
+    }
+
+    // get userid from token
+    let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
+
+    let userId = data.id;
+
+    if (req.body.fullName && req.body.address) {
+      // add address to database
+      const res = await address.create({
+        userId: userId,
+        fullName: req.body.fullName,
+        address: req.body.address,
+        city: req.body.city,
+        state: req.body.state,
+        country: req.body.country,
+      });
+    }
+    res.status(200).json({
+      header: { message: "Address added" },
+      body: {},
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: { title: "Failed to set the password", message: err.message },
+      body: {},
+    });
+  }
+};
+
+export const deleteAddress = async (req, res) => {
+  try {
+    // check if token exists
+    if (!req.body.token) {
+      throw { message: "Not Authorized" };
+    }
+
+    if (!req.body.addressId) {
+      throw { message: "Address id not mentioned :( sad life" };
+    }
+
+    // delete address using its id
+    let result = await address.deleteOne({ _id: req.body.addressId });
+
+    res.status(200).json({
+      header: { message: "Address Deleted" },
+      body: {},
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: { title: "Failed to set the password", message: err.message },
+      body: {},
+    });
+  }
+};
+
+export const updateAddres = async (req, res) => {
+  try {
+    // check if token exists
+    if (!req.body.token) {
+      throw { message: "Not Authorized" };
+    }
+
+    // if address Id not mentioned
+    if (!req.body.addressId) {
+      throw { message: "Address id not mentioned :( sad life" };
+    }
+
+    let query = { _id: addressId };
+    // fullName: { type: String, required: true },
+    // address: { type: String, required: true },
+    // city: { type: String, required: true },
+    // state: { type: String, required: true },
+    // country: { type: String, required: true },
+
+    let newValue = {
+      $set: {
+        fullName: req.body.fullName,
+        address: req.body.address,
+        city: req.body.city,
+        state: req.body.city,
+        country: req.body.country,
+      },
+    };
+
+    let result = await address.updateOne(query, newValue);
+
+    res.status(200).json({
+      header: { message: "Address updated sucessfully" },
+      body: {},
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: { title: "Failed to set the password", message: err.message },
+      body: {},
+    });
+  }
+};
+
+export const viewUserAddress = async (req, res) => {
+  try {
+    // check if token exists
+    if (!req.body.token) {
+      throw { message: "Not Authorized" };
+    }
+
+    // get userid from token
+    let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
+
+    let userId = data.id;
+
+    let query = { userId: userId };
+
+    let result = await address.find(query);
+
+    res.status(200).json({
+      header: { message: "Success" },
+      body: { address: result },
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: { title: "Unable to fetch User Address", message: err.message },
+      body: {},
+    });
+  }
+};
+
+export const viewUserPaymentCard = async (req, res) => {
+  try {
+    // check if token exists
+    if (!req.body.token) {
+      throw { message: "Not Authorized" };
+    }
+
+    // get userid from token
+    let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
+
+    let userId = data.id;
+
+    let query = { _id: userId };
+
+    let result = user.find(query).paymentCard;
+
+    res.status(200).json({
+      header: { message: "Success" },
+      body: { result },
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: {
+        title: "Unable to fetch User Payment Cards",
+        message: err.message,
+      },
+      body: {},
+    });
+  }
+};
+
+export const addPaymentCard = async (req, res) => {
+  try {
+    // check if token exists
+    if (!req.body.token) {
+      throw { message: "Not Authorized" };
+    }
+
+    // get userid from token
+    let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
+
+    let userId = data.id;
+
+    let userObj = user.findById(userId);
+
+    let result = await userObj.paymentCard.create({
+      holderName: req.body.holderName,
+      expDate: req.body.expDat,
+      cardName: req.body.cardName,
+    });
+
+    res.status(200).json({
+      header: { message: "added payment card in User" },
+      body: { result },
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: {
+        title: "Unable to add Payment Card",
+        message: err.message,
+      },
+      body: {},
+    });
+  }
+};
+
+export const editPaymentCard = async (req, res) => {
+  try {
+    if (!req.body.token) {
+      throw { message: "Not Authorized" };
+    }
+
+    // get userid from token
+    let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
+
+    let userId = data.id;
+
+    let cardId = req.body.cardId;
+
+    let userReq = await user.findById(userId);
+
+    userReq.paymentCard.id(cardId).holderName = req.body.holderName;
+    userReq.paymentCard.id(cardId).expDate = req.body.expDate;
+    userReq.paymentCard.id(cardId).cardName = req.body.cardName;
+
+    let result = await await userReq.save();
+
+    res.status(200).json({
+      header: { message: "Payment card updated successfully" },
+      body: { result },
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: {
+        title: "Unable to add Payment Card",
+        message: err.message,
+      },
+      body: {},
+    });
+  }
+};
+
+export const deleteCard = async (req, res) => {
+  try {
+    if (!req.body.token) {
+      throw { message: "Not Authorized" };
+    }
+    // get userid from token
+    let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
+
+    let userId = data.id;
+
+    if (!req.body.cardId) {
+      throw { message: "card id not provided" };
+    }
+    let cardId = req.body.cardId;
+
+    // get the user
+    let userReq = await user.findById(userId);
+    // delete the card's details
+    userReq.paymentCard.pull(cardId);
+    // save changes :)
+    let result = await userReq.save();
+
+    res.status(200).json({
+      header: { message: "Payment card updated successfully" },
+      body: { result },
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: {
+        title: "Unable to add Payment Card",
+        message: err.message,
+      },
       body: {},
     });
   }
