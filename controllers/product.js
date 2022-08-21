@@ -5,13 +5,11 @@ export const addProduct = async (req, res) => {
   try {
     if (
       req.body.name.trim() &&
-      req.body.category.trim() &&
       req.body.price &&
       req.body.discount &&
       req.body.stock
     ) {
       let name = req.body.name;
-      let cat = req.body.category;
       let brand = req.body.brand;
       let image = "";
       if (req.file) {
@@ -30,7 +28,6 @@ export const addProduct = async (req, res) => {
       }
       await product.create({
         name: name,
-        category: cat,
         price: req.body.price,
         discount: req.body.discount,
         stock: req.body.stock,
@@ -73,7 +70,6 @@ export const viewProductSingle = async (req, res) => {
           body: {
             product: {
               name: result.name,
-              category: result.category,
               description: result.description,
               price: result.price,
               discount: result.discount,
