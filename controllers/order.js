@@ -152,6 +152,7 @@ export const viewUserOrder = async (req, res) => {
 };
 
 export const updateStatus = async (req, res) => {
+  // if token not provided
   try {
     if (!req.body.token) {
       throw { message: "Not Authorized" };
@@ -161,6 +162,7 @@ export const updateStatus = async (req, res) => {
 
     let isAdmin = (await user.findById(data.id, "admin")).admin;
 
+    // if not admin
     if (!isAdmin) {
       throw { message: "Not Authorized" };
     }
@@ -179,10 +181,11 @@ export const updateStatus = async (req, res) => {
     let query = { _id: orderId };
     let newValue = { $set: { status: newStatus } };
 
+    // change order status
     const result = await order.updateOne(query, newValue);
 
     res.status(200).json({
-      header: { message: "Order status canged successfully :) Congrats" },
+      header: { message: "Order status changed successfully" },
       body: {},
     });
   } catch (err) {

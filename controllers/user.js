@@ -190,13 +190,11 @@ export const deleteAccount = async (req, res) => {
       // get data from token
       let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
 
-      // check if password is correct
+      // get user
       let currUser = await user.findById(data.id);
 
       // check if the the pervious password entered is correct or not
       let dbPassword = currUser.password;
-
-      // console.log(dbPassword);
 
       bcrypt.compare(req.body.password, dbPassword, async (err, isMatch) => {
         // error while comparing
@@ -236,6 +234,89 @@ export const deleteAccount = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       header: { title: "Failed to delete Account", message: err.message },
+      body: {},
+    });
+  }
+};
+
+export const getInfo = async (req, res) => {
+  // validate token
+  try {
+    // if token does not exists
+    if (!req.body.token) {
+      res.status(500).json({
+        header: { message: "Token not found" },
+        body: {},
+      });
+      return;
+    }
+
+    // get data from token
+    let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
+
+    // check if password is correct
+    let currUser = await user.findById(data.id);
+
+    // reutrn the requied information
+    res.status(200).json({
+      header: { message: "success" },
+      body: {
+        name: currUser.name,
+        email: currUser.email,
+        dob: currUser.dob,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: { title: "Failed to get account details", message: err.message },
+      body: {},
+    });
+  }
+};
+
+export const setName = async (req, res) => {
+  try {
+    // if token does not exists
+    if (!req.body.token) {
+      res.status(500).json({
+        header: { message: "Token not found" },
+        body: {},
+      });
+      return;
+    }
+
+    // get data from token
+    let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
+
+    // get user id from data
+
+    let userId = data.id;
+
+    // check if name is provided
+
+    if (!req.body.name) {
+      res.status(500).json({
+        header: { message: "Name field not provided" },
+        body: {},
+      });
+      return;
+    }
+    // change name in database
+
+    let query = { _id: userId };
+
+    let newValue = { $set: { name: req.body.name } };
+
+    const result = await user.updateOne(query, newValue);
+
+    // display the result
+    res.status(200).json({
+      header: { message: "Name changed successfully" },
+      body: {},
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: { title: "Failed to set the password", message: err.message },
       body: {},
     });
   }
