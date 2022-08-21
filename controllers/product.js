@@ -34,8 +34,8 @@ export const addProduct = async (req, res) => {
         description: des ? des : "",
         brand: brand ? brand : "",
         image: image ? image : "",
-        color: req.body.color ? req.body.color : [""],
-        size: req.body.size ? req.body.size : [""],
+        color: req.body.color ? req.body.color : undefined,
+        size: req.body.size ? req.body.size : undefined,
       });
 
       res.status(200).json({
@@ -106,10 +106,16 @@ export const viewProductList = async (req, res) => {
     const query = req.body.prevID ? { _id: { $gt: req.body.prevID } } : {};
     const pagelimit = 20;
 
-    const result = await product
-      .find(query)
-      .limit(pagelimit)
-      .select({ _id: 1, name: 1, price: 1, stock: 1, discount: 1, image: 1 });
+    const result = await product.find(query).limit(pagelimit).select({
+      _id: 1,
+      name: 1,
+      price: 1,
+      stock: 1,
+      discount: 1,
+      image: 1,
+      size: 1,
+      color: 1,
+    });
     if (result) {
       res.status(200).json({
         header: { message: "success" },
