@@ -388,7 +388,7 @@ export const updateAddres = async (req, res) => {
       throw { message: "Address id not mentioned :( sad life" };
     }
 
-    let query = { _id: addressId };
+    let query = { _id: req.body.addressId };
     // fullName: { type: String, required: true },
     // address: { type: String, required: true },
     // city: { type: String, required: true },
@@ -400,7 +400,7 @@ export const updateAddres = async (req, res) => {
         fullName: req.body.fullName,
         address: req.body.address,
         city: req.body.city,
-        state: req.body.city,
+        state: req.body.state,
         country: req.body.country,
       },
     };
@@ -409,11 +409,14 @@ export const updateAddres = async (req, res) => {
 
     res.status(200).json({
       header: { message: "Address updated sucessfully" },
-      body: {},
+      body: { result },
     });
   } catch (err) {
     res.status(500).json({
-      header: { title: "Failed to set the password", message: err.message },
+      header: {
+        title: "Unable to update address due to unexpected reasons",
+        message: err.message,
+      },
       body: {},
     });
   }
@@ -461,11 +464,12 @@ export const viewUserPaymentCard = async (req, res) => {
 
     let query = { _id: userId };
 
-    let result = user.find(query).paymentCard;
+    let result = await user.findById(query);
+    let cards = result.paymentCard;
 
     res.status(200).json({
       header: { message: "Success" },
-      body: { result },
+      body: { cards },
     });
   } catch (err) {
     res.status(500).json({
@@ -490,52 +494,23 @@ export const addPaymentCard = async (req, res) => {
 
     let userId = data.id;
 
-    let userObj = user.findById(userId);
-
-    let result = await userObj.paymentCard.create({
+    let data1 = {
       holderName: req.body.holderName,
-      expDate: req.body.expDat,
-      cardName: req.body.cardName,
-    });
+      expDate: req.body.expDate,
+      cardNumber: req.body.cardNumber,
+      expDate: req.body.expDate,
+      cv: req.body.cv,
+    };
+
+    let result = await user.updateOne(
+      {
+        _id: userId,
+      },
+      { $push: { paymentCard: data1 } }
+    );
 
     res.status(200).json({
       header: { message: "added payment card in User" },
-      body: { result },
-    });
-  } catch (err) {
-    res.status(500).json({
-      header: {
-        title: "Unable to add Payment Card",
-        message: err.message,
-      },
-      body: {},
-    });
-  }
-};
-
-export const editPaymentCard = async (req, res) => {
-  try {
-    if (!req.body.token) {
-      throw { message: "Not Authorized" };
-    }
-
-    // get userid from token
-    let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
-
-    let userId = data.id;
-
-    let cardId = req.body.cardId;
-
-    let userReq = await user.findById(userId);
-
-    userReq.paymentCard.id(cardId).holderName = req.body.holderName;
-    userReq.paymentCard.id(cardId).expDate = req.body.expDate;
-    userReq.paymentCard.id(cardId).cardName = req.body.cardName;
-
-    let result = await await userReq.save();
-
-    res.status(200).json({
-      header: { message: "Payment card updated successfully" },
       body: { result },
     });
   } catch (err) {
@@ -568,7 +543,7 @@ export const deleteCard = async (req, res) => {
     let userReq = await user.findById(userId);
     // delete the card's details
     userReq.paymentCard.pull(cardId);
-    // save changes :)
+    // save changes
     let result = await userReq.save();
 
     res.status(200).json({

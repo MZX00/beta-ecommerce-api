@@ -7,7 +7,6 @@ import {
   getInfo,
   setName,
   addPaymentCard,
-  editPaymentCard,
   deleteCard,
   viewUserAddress,
   viewUserPaymentCard,
@@ -31,8 +30,6 @@ router.post("/view", getInfo);
 router.post("/delete", deleteAccount);
 
 router.post("/card/create", addPaymentCard);
-
-router.post("/card/update", editPaymentCard);
 
 router.post("/card/delete", deleteCard);
 
