@@ -34,8 +34,8 @@ export const addProduct = async (req, res) => {
         description: des ? des : "",
         brand: brand ? brand : "",
         image: image ? image : "",
-        color: req.body.color ? JSON.parse(req.body.color) : [""],
-        size: req.body.size ? JSON.parse(req.body.size) : [""],
+        color: req.body.color ? req.body.color : [""],
+        size: req.body.size ? req.body.size : [""],
       });
 
       res.status(200).json({
