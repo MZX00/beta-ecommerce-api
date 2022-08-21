@@ -11,7 +11,7 @@ export const createOrder = async (req, res) => {
       userid: data.id,
       products: req.body.products,
       dateCreated: moment(),
-      status: "inprogress",
+      status: "processing",
       cost: req.body.cost,
     });
     res.status(200).json({
@@ -38,7 +38,7 @@ export const viewAllOrders = async (req, res) => {
       let data = [];
       for (let i = 0; i < 3; i++) {
         const status =
-          i === 0 ? "inprogress" : i === 1 ? "cancelled" : "completed";
+          i === 0 ? "processing" : i === 1 ? "cancelled" : "completed";
         const result = await order.find({ status: status }).limit(pagelimit);
         data.push(
           //adding username
@@ -75,7 +75,7 @@ export const viewAllOrders = async (req, res) => {
       res.status(200).json({
         header: { message: "success" },
         body: {
-          inprogress: data[0],
+          processing: data[0],
           cancelled: data[1],
           completed: data[2],
         },
@@ -102,7 +102,7 @@ export const viewUserOrder = async (req, res) => {
       let data = [];
       for (let i = 0; i < 3; i++) {
         const status =
-          i === 0 ? "inprogress" : i === 1 ? "cancelled" : "completed";
+          i === 0 ? "processing" : i === 1 ? "cancelled" : "completed";
         const result = await order
           .find({ status: status, userid: userInfo.id })
           .limit(pagelimit);
@@ -137,7 +137,7 @@ export const viewUserOrder = async (req, res) => {
       res.status(200).json({
         header: { message: "success" },
         body: {
-          inprogress: data[0],
+          processing: data[0],
           cancelled: data[1],
           completed: data[2],
         },
@@ -146,6 +146,48 @@ export const viewUserOrder = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       header: { title: "Failed to fetch orders", message: err.message },
+      body: {},
+    });
+  }
+};
+
+export const updateStatus = async (req, res) => {
+  try {
+    if (!req.body.token) {
+      throw { message: "Not Authorized" };
+    }
+
+    let data = await jwt.decode(req.body.token, process.env.JWT_SECRET);
+
+    let isAdmin = (await user.findById(data.id, "admin")).admin;
+
+    if (!isAdmin) {
+      throw { message: "Not Authorized" };
+    }
+
+    const orderId = req.body._id;
+    const newStatus = req.body.status;
+
+    if (
+      newStatus != "cancelled" &&
+      newStatus != "processing" &&
+      newStatus != "completed"
+    ) {
+      throw { message: "Invalid Order Status" };
+    }
+
+    let query = { _id: orderId };
+    let newValue = { $set: { status: newStatus } };
+
+    const result = await order.updateOne(query, newValue);
+
+    res.status(200).json({
+      header: { message: "Order status canged successfully :) Congrats" },
+      body: {},
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: { title: "Failed to update Order status", message: err.message },
       body: {},
     });
   }
