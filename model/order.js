@@ -10,13 +10,9 @@ const products = new Schema({
   color: { type: String },
 });
 
-const paymentInfo = new Schema({
-  cash: { type: Boolean, required: true },
-  cardInfo: { type: "ObjectId", ref: "paymentCard" },
-});
-
 const order = new Schema({
   userid: { type: Schema.ObjectId, required: true },
+  products: { type: [products], required: true },
   dateCreated: { type: Date, required: true },
   status: { type: String, required: true },
   cost: { type: Number, required: true },
