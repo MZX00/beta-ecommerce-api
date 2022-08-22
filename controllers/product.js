@@ -3,12 +3,7 @@ import category from "../model/category.js";
 
 export const addProduct = async (req, res) => {
   try {
-    if (
-      req.body.name.trim() &&
-      req.body.price &&
-      req.body.discount &&
-      req.body.stock
-    ) {
+    if (req.body.name.trim() && req.body.price) {
       let name = req.body.name;
       let brand = req.body.brand;
       let image = "";
