@@ -145,7 +145,7 @@ export const viewProductSingle = async (req, res) => {
 export const viewProductList = async (req, res) => {
   try {
     const query = req.body.prevID ? { _id: { $gt: req.body.prevID } } : {};
-    const pagelimit = 20;
+    const pagelimit = 100;
 
     const result = await product.find(query).limit(pagelimit).select({
       _id: 1,
