@@ -90,7 +90,7 @@ export const updateProduct = async (req, res) => {
     let result = await product.updateOne(query, newValue);
 
     res.status(200).json({
-      header: { message: "Product deleted successfully" },
+      header: { message: "Product updated successfully" },
       body: { result },
     });
   } catch (err) {
