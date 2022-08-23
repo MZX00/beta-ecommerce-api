@@ -70,6 +70,14 @@ export const deleteProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     //id of the product to update
+
+    if (!req.body._id) {
+      throw {
+        title: "Failed to update Product",
+        message: "id not provided",
+      };
+    }
+
     let query = { _id: req.body._id };
     // new values of the product
     let newValue = {
