@@ -180,7 +180,7 @@ export const viewProductListCategory = async (req, res) => {
     const query = req.body.prevProductID
       ? { _id: req.body._id, products: { $gt: req.body.prevProductID } }
       : { _id: req.body._id };
-    const pagelimit = 20;
+    const pagelimit = 100;
 
     const result = await category
       .find(query, "products")

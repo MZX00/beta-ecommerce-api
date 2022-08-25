@@ -28,7 +28,7 @@ export const createOrder = async (req, res) => {
 
 export const viewAllOrders = async (req, res) => {
   try {
-    const pagelimit = 20;
+    const pagelimit = 100;
     //initial page loading
     if (
       !req.body.progressPrevID &&
@@ -91,7 +91,7 @@ export const viewAllOrders = async (req, res) => {
 
 export const viewUserOrder = async (req, res) => {
   try {
-    const pagelimit = 20;
+    const pagelimit = 100;
     //initial page loading
     if (
       !req.body.progressPrevID &&

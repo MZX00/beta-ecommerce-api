@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import moment from "moment";
 import address from "../model/address.js";
+import order from "../model/order.js";
 
 export const signUp = async (req, res) => {
   try {
@@ -257,6 +258,8 @@ export const getInfo = async (req, res) => {
     // check if password is correct
     let currUser = await user.findById(data.id);
 
+    const orders = await order.count({ userid: data.id });
+
     // reutrn the requied information
     res.status(200).json({
       header: { message: "success" },
@@ -264,6 +267,8 @@ export const getInfo = async (req, res) => {
         name: currUser.name,
         email: currUser.email,
         dob: currUser.dob,
+        payments: currUser.paymentCard ? currUser.paymentCard.length : 0,
+        orders,
       },
     });
   } catch (err) {
