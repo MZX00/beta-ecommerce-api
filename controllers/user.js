@@ -259,6 +259,7 @@ export const getInfo = async (req, res) => {
     let currUser = await user.findById(data.id);
 
     const orders = await order.count({ userid: data.id });
+    const address = await address.count({ userId: data.id });
 
     // reutrn the requied information
     res.status(200).json({
@@ -267,7 +268,7 @@ export const getInfo = async (req, res) => {
         name: currUser.name,
         email: currUser.email,
         dob: currUser.dob,
-        payments: currUser.paymentCard ? currUser.paymentCard.length : 0,
+        address,
         orders,
       },
     });
