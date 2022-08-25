@@ -67,39 +67,47 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
-export const updateProduct = async (req, res) => {};
+export const updateProduct = async (req, res) => {
+  try {
+    //id of the product to update
 
-// export const updateProduct = async (req, res) => {
-//   try{
-//     let query = {_id: req.body._id};
-//     name: { type: String, required: true },
-//   description: { type: String, required: false },
-//   price: { type: Number, required: true },
-//   discount: { type: Number, required: true },
-//   stock: { type: Number, required: true },
-//   brand: { type: String, required: false },
-//   image: { type: String, required: false },
-//   color: { type: [String], required: false },
-//   size: { type: [String], required: false },
+    if (!req.body._id) {
+      throw {
+        title: "Failed to update Product",
+        message: "id not provided",
+      };
+    }
 
-//   let newValue = { $set: {
-//     name:req.body.name,
+    let query = { _id: req.body._id };
+    // new values of the product
+    let newValue = {
+      $set: {
+        name: req.body.name,
+        description: req.body.description,
+        price: req.body.price,
+        discount: req.body.discount,
+        stock: req.body.stock,
+        brand: req.body.brand,
+        image: req.body.image,
+        color: req.body.color,
+        size: req.body.size,
+      },
+    };
 
-//   } };
+    // changing in database
+    let result = await product.updateOne(query, newValue);
 
-//     let result = await product.updateOne(query,newValue);
-
-//     res.status(200).json({
-//       header: { message: "Product deleted successfully" },
-//       body: { result },
-//     });
-//   }catch(err){
-//     res.status(500).json({
-//       header: { message: err.message },
-//       body: {},
-//     });
-//   }
-// };
+    res.status(200).json({
+      header: { message: "Product updated successfully" },
+      body: { result },
+    });
+  } catch (err) {
+    res.status(500).json({
+      header: { message: err.message },
+      body: {},
+    });
+  }
+};
 
 export const viewProductSingle = async (req, res) => {
   try {
